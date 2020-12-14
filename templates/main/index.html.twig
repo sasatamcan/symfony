@@ -1,18 +1,43 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello MainController!{% endblock %}
+{% block title %}Notes{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
 <div class="example-wrapper">
-    <h1>Welcome! ✅</h1>
-   {{form_start(form)}}
-    {{form_widget(form)}}
-    {{form_end(form)}}
+    <h1>Notes</h1>
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+      {% for message in app.flashes('success') %}
+        <span class="text-success">{{ message }}</span>
+      {% endfor %}
+      {{form_start(form)}}
+      <div class="form-group">
+        {{ form_row(form.title) }}
+        {{ form_errors(form.title) }}
+      </div>
+      <div class="form-group">
+        {{ form_row(form.descr) }}
+        {{ form_errors(form.descr) }}
+      </div>
+      <div>
+        {{ form_label(form.created) }}
+        {{ form_widget(form.created) }}
+      </div>
+      <div>
+        {{ form_label(form.status) }}
+        {{ form_widget(form.status) }}
+      </div>
+      <div>
+        <button class="btn btn-primary" >
+          <span>Send</span>
+        </button>
+      </div>
+      {{ form_errors(form) }}
+      {{form_widget(form)}}
+      {{form_end(form)}}
+    {% else %}
+      <p>For write a note - <a href="{{ path('app_login') }}">Sign in</a>, please</p>
+    {% endif %}
    
     <table class="table">
   <thead class="thead-dark">
@@ -31,7 +56,12 @@
       <td>{{ note.title }}</td>
       <td>{{ note.descr }}</td>
       <td>{{ note.status }}</td>
-      <td><a href="{{ path('remove', {'note': note.id}) }}" class="btn btn-warning">Delete</a></td>
+      <td>  <a href="{{ path('note.detils', {'id':note.id}) }}">
+          <h3>Details</h3>
+        </a></td>
+      {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+      <td><a href="{{ path('note.remove', {'note': note.id}) }}" class="btn btn-warning">Delete</a></td>
+      {% endif %}
     </tr>
     {% endfor %}
   </tbody>

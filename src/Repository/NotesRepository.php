@@ -3,7 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Notes;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -19,32 +22,28 @@ class NotesRepository extends ServiceEntityRepository
         parent::__construct($registry, Notes::class);
     }
 
-    // /**
-    //  * @return Notes[] Returns an array of Notes objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param Notes $notes
+     * @param User $user
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function save(Notes $notes, User $user): void
     {
-        return $this->createQueryBuilder('n')
-            ->andWhere('n.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('n.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $notes->setUser($user);
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($notes);
+        $entityManager->flush();
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Notes
+    /**
+     * @param Notes $note
+     * @throws ORMException
+     */
+    public function remove($note): void
     {
-        return $this->createQueryBuilder('n')
-            ->andWhere('n.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $entityManager = $this->getEntityManager();
+        $entityManager->remove($note);
+        $entityManager->flush();
     }
-    */
 }

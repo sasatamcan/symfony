@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -34,24 +36,14 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\OneToMany(targetEntity="App\Entity\Notes", mappedBy="user")
      */
-    private $title;
+    private $notes;
 
-    /**
-     * @ORM\Column(type="string", length=1200)
-     */
-    private $descr;
-
-    /**
-     * @ORM\Column(type="smallint")
-     */
-    private $status;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $created;
+    public function __construct()
+    {
+        $this->notes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -126,50 +118,33 @@ class User implements UserInterface
         // $this->plainPassword = null;
     }
 
-    public function getTitle(): ?string
+    /**
+     * @return Collection|Notes[]
+     */
+    public function getNotes(): Collection
     {
-        return $this->title;
+        return $this->notes;
     }
 
-    public function setTitle(string $title): self
+    public function addNote(Notes $note): self
     {
-        $this->title = $title;
+        if (!$this->notes->contains($note)) {
+            $this->notes[] = $note;
+            $note->setUser($this);
+        }
 
         return $this;
     }
 
-    public function getDescr(): ?string
+    public function removeNote(Notes $note): self
     {
-        return $this->descr;
-    }
-
-    public function setDescr(string $descr): self
-    {
-        $this->descr = $descr;
-
-        return $this;
-    }
-
-    public function getStatus(): ?int
-    {
-        return $this->status;
-    }
-
-    public function setStatus(int $status): self
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    public function getCreated(): ?\DateTimeInterface
-    {
-        return $this->created;
-    }
-
-    public function setCreated(\DateTimeInterface $created): self
-    {
-        $this->created = $created;
+        if ($this->notes->contains($note)) {
+            $this->notes->removeElement($note);
+            // set the owning side to null (unless already changed)
+            if ($note->getUser() === $this) {
+                $note->setUser(null);
+            }
+        }
 
         return $this;
     }

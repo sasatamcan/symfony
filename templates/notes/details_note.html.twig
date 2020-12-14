@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Details Note{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+    <h1>Details Note</h1>
+    <div>
+        {{ note.title }}
+        <br>
+        {{ note.descr | raw }}
+        <br>
+        Date of publication: <span>{{ note.created | date("Y-m-d") }}</span> <br>
+        Author of publication:<span> {{ note.user.username }}</span>
+    </div>
+</div>
+{% endblock %}

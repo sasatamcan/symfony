@@ -29,7 +29,6 @@ class NotesType extends AbstractType
                 ]
             ])
             ->add('created', DateTimeType::class)
-            ->add('submit', SubmitType::class)
         ;
     }
 

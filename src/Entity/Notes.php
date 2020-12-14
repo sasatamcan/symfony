@@ -18,29 +18,31 @@ class Notes
     private $id;
 
     /**
+     * @ORM\Column(type="string", length=100)
      * @Assert\NotBlank()
-     *
-     * @ORM\Column(type="string", length=255)
+     * @Assert\Length(
+     *    min = "3",
+     *    max = "100",
+     *    minMessage = "Your title must be at least {{ limit }} characters",
+     *    maxMessage = "Your title should be no longer {{ limit }} characters"
+    )
      */
     private $title;
 
     /**
+     * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
      * @Assert\Length(
      *    min = "3",
-     *    max = "51",
-     *    minMessage = "Ваш текст должен быть как минимум {{ limit }} символов",
-     *    maxMessage = "Ваш текст должен быть не длиннее {{ limit }} символов"
-     )
-    
-     *
-     * @ORM\Column(type="string", length=255)
+     *    max = "255",
+     *    minMessage = "Your text must be at least {{ limit }} characters",
+     *    maxMessage = "Your text should be no longer {{ limit }} characters"
+    )
      */
     private $descr;
 
     /**
      * @Assert\NotBlank()
-     *
      * @ORM\Column(type="smallint")
      */
     private $status;
@@ -51,6 +53,12 @@ class Notes
      * @ORM\Column(type="datetime")
      */
     private $created;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="notes")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
 
     public function getId(): ?int
     {
@@ -101,6 +109,18 @@ class Notes
     public function setCreated(\DateTimeInterface $created): self
     {
         $this->created = $created;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
